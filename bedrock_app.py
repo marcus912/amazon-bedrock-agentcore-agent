@@ -1,7 +1,7 @@
 """Bedrock AgentCore application integration."""
 
 from bedrock_agentcore import BedrockAgentCoreApp
-from src.agent.strands_agent import create_agent, run_agent
+from agent.strands_agent import create_agent, run_agent
 import logging
 
 # Configure logging

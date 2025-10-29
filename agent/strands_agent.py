@@ -7,7 +7,7 @@ import logging
 # Import tools
 from strands_tools.calculator import calculator
 from strands_tools.tavily import tavily_search
-from src.tools.custom_tools import get_custom_tools
+from tools.custom_tools import get_custom_tools
 
 logger = logging.getLogger(__name__)
 

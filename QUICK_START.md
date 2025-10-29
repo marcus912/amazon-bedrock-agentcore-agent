@@ -50,9 +50,11 @@ Run commands directly with uv (no need to activate virtual environment):
 # Local testing
 uv run python main.py
 
-# Deploy to Bedrock AgentCore
-uv run python src/bedrock_app.py
+# Test bedrock app locally
+uv run python test_bedrock_app.py
 ```
+
+**Note**: For AWS deployment, see [DEPLOYMENT.md](DEPLOYMENT.md)
 
 ### Option 2: Activate Virtual Environment
 
@@ -63,8 +65,8 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 # Run the agent
 python main.py
 
-# Deploy to Bedrock AgentCore
-python src/bedrock_app.py
+# Test bedrock app
+python test_bedrock_app.py
 
 # Deactivate when done
 deactivate
@@ -103,13 +105,13 @@ uv pip compile pyproject.toml -o requirements.txt
 uv run pytest
 
 # Format code
-uv run black src/
+uv run black agent/ tools/ *.py
 
 # Lint code
-uv run ruff check src/
+uv run ruff check agent/ tools/ *.py
 
 # Type check
-uv run mypy src/
+uv run mypy agent/ tools/ *.py
 ```
 
 ### Python Version Management
@@ -131,14 +133,15 @@ uv python list --all-versions
 
 ```
 aws-ai-agent/
-├── src/
-│   ├── agent/
-│   │   └── strands_agent.py     # Main agent logic with Strands SDK
-│   ├── tools/
-│   │   └── custom_tools.py      # Custom tools (@tool decorated functions)
-│   ├── bedrock_app.py           # Bedrock AgentCore entrypoint
-│   └── config.py                # Configuration from .env
+├── agent/
+│   └── strands_agent.py         # Main agent logic with Strands SDK
+├── tools/
+│   └── custom_tools.py          # Custom tools (@tool decorated functions)
+├── bedrock_app.py               # Bedrock AgentCore entrypoint
+├── config.py                    # Configuration from .env
 ├── main.py                      # Local testing script (interactive CLI)
+├── test_bedrock_app.py          # Test bedrock app locally
+├── agentcore                    # CLI for AWS deployment
 ├── pyproject.toml               # Dependencies & project config (managed by uv)
 ├── uv.lock                      # Locked dependencies (auto-generated)
 ├── .python-version              # Python version (3.13.5)
@@ -148,7 +151,7 @@ aws-ai-agent/
 ## Key Dependencies
 
 - **strands-agents**: Open-source framework for building AI agents
-- **strands-agents-tools**: Pre-built tools (calculator, web_search, etc.)
+- **strands-agents-tools**: Pre-built tools (calculator, tavily_search, etc.)
 - **bedrock-agentcore**: Deploy to AWS managed infrastructure
 - **boto3**: AWS SDK for additional AWS service integrations
 - **python-dotenv**: Load environment variables from .env
@@ -197,22 +200,13 @@ Install the correct Python version:
 uv python install 3.13.5
 ```
 
-## Why uv?
-
-- **Fast**: 10-100x faster than pip for dependency resolution
-- **Simple**: Single tool for Python versions, packages, and environments
-- **Reliable**: Deterministic dependency resolution with `uv.lock`
-- **Modern**: Native support for `pyproject.toml` (PEP 621)
-- **All-in-one**: Replaces pip, pip-tools, virtualenv, pyenv, and more
-
 ## Next Steps
 
-1. **Explore custom tools**: Check `src/tools/custom_tools.py` for examples
+1. **Explore custom tools**: Check `tools/custom_tools.py` for examples
 2. **Add your own tools**: Use the `@tool` decorator from Strands
-3. **Customize prompts**: Edit system prompt in `src/agent/strands_agent.py`
-4. **Deploy to production**: Use `src/bedrock_app.py` for Bedrock AgentCore
+3. **Customize prompts**: Edit system prompt in `agent/strands_agent.py`
+4. **Deploy to AWS**: See [DEPLOYMENT.md](DEPLOYMENT.md) for full deployment guide
 5. **Write tests**: Create a `tests/` directory and run `uv run pytest`
-6. **Set up CI/CD**: Use GitHub Actions or AWS CodePipeline
 
 ## Additional Resources
 

@@ -1,7 +1,7 @@
 """Local testing script for the AWS AI Agent."""
 
 import logging
-from src.agent.strands_agent import create_agent, run_agent
+from agent.strands_agent import create_agent, run_agent
 
 # Configure logging
 logging.basicConfig(
