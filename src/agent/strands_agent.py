@@ -5,8 +5,9 @@ from typing import Optional, List
 import logging
 
 # Import tools
-from strands_tools import calculator, web_search
-from ..tools.custom_tools import get_custom_tools
+from strands_tools.calculator import calculator
+from strands_tools.tavily import tavily_search
+from src.tools.custom_tools import get_custom_tools
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ You have access to various tools to help answer questions and perform tasks.
 Always be concise, accurate, and helpful in your responses."""
 
     # Combine default tools with custom tools
-    tools = [calculator, web_search] + get_custom_tools()
+    tools = [calculator, tavily_search] + get_custom_tools()
 
     # Add any additional tools passed by the user
     if additional_tools:
