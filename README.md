@@ -348,17 +348,6 @@ rm -rf .venv
 uv sync
 ```
 
-## Why uv?
-
-This project uses **uv** for dependency management because:
-
-- ⚡ **10-100x faster** than pip for dependency resolution
-- 🔒 **Deterministic builds** with `uv.lock`
-- 🐍 **Python version management** built-in
-- 📦 **Modern standards** - native `pyproject.toml` support (PEP 621)
-- 🛠️ **All-in-one tool** - replaces pip, pip-tools, virtualenv, pyenv
-- 🚀 **Production-ready** - used by major projects
-
 ## References
 
 ### Project Documentation
