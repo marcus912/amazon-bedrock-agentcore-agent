@@ -21,7 +21,7 @@ def create_agent(
     Create a Strands agent with specified configuration.
 
     Args:
-        model: Model identifier (defaults to Bedrock Claude 4 Sonnet)
+        model: Model identifier (defaults to Bedrock Claude 3.7 Sonnet)
         system_prompt: Custom system prompt for the agent
         additional_tools: Additional tools to include beyond default tools
 
