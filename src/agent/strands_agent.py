@@ -45,7 +45,7 @@ Always be concise, accurate, and helpful in your responses."""
     # Create the agent
     agent = Agent(
         tools=tools,
-        system=system_prompt or default_prompt,
+        system_prompt=system_prompt or default_prompt,
         model=model,  # Will default to Bedrock Claude 4 Sonnet if None
     )
 
