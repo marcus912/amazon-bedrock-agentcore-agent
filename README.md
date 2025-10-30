@@ -9,7 +9,6 @@ An AI agent built with AWS Strands SDK and deployed via AWS Bedrock AgentCore.
 - 🤖 Model-driven agent architecture using Strands SDK
 - 🔧 Built-in tools: Calculator, Tavily search, and custom tools
 - 🏗️ Production deployment via Bedrock AgentCore
-- 🔐 AWS authentication and security built-in
 - 📝 Logging and observability support
 
 ## Project Structure
@@ -34,12 +33,12 @@ uv sync                    # Install dependencies
 cp .env.example .env       # Configure environment
 
 # Local testing (requires Docker)
-uv run python -m bedrock_agentcore_starter_toolkit.cli.cli launch --local
+agentcore launch --local
 
 # Deploy to AWS
-uv run python -m bedrock_agentcore_starter_toolkit.cli.cli launch
-uv run python -m bedrock_agentcore_starter_toolkit.cli.cli invoke --prompt "Hi"
-uv run python -m bedrock_agentcore_starter_toolkit.cli.cli destroy
+agentcore launch
+agentcore invoke --prompt "Hi"
+agentcore destroy
 ```
 
 ## Custom Tools

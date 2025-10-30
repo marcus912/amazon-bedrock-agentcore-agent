@@ -2,11 +2,6 @@
 
 Get your AWS AI Agent running in minutes.
 
-**Note**: For convenience, set this alias:
-```bash
-alias agentcore='uv run python -m bedrock_agentcore_starter_toolkit.cli.cli'
-```
-
 ## Prerequisites
 
 **Required:**
@@ -55,7 +50,7 @@ Requires Docker, Finch, or Podman:
 
 ```bash
 # Build and run in container
-uv run python agentcore launch --local
+agentcore launch --local
 
 # Test via HTTP
 curl -X POST http://localhost:8080/invocations \
@@ -67,16 +62,16 @@ curl -X POST http://localhost:8080/invocations \
 
 ```bash
 # Deploy (no Docker required)
-uv run python agentcore launch
+agentcore launch
 
 # Check status
-uv run python agentcore status
+agentcore status
 
 # Test
-uv run python agentcore invoke --prompt "Hello!"
+agentcore invoke --prompt "Hello!"
 
 # Clean up
-uv run python agentcore destroy
+agentcore destroy
 ```
 
 ## Deployment Options

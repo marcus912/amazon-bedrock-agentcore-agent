@@ -2,11 +2,6 @@
 
 Deploy your AI agent to AWS Bedrock AgentCore for production use.
 
-**Note**: For convenience, set this alias:
-```bash
-alias agentcore='uv run python -m bedrock_agentcore_starter_toolkit.cli.cli'
-```
-
 ## Understanding the Deployment
 
 ### Dockerfile
@@ -50,7 +45,7 @@ AWS credentials via `aws configure`:
 ### 2. Test Locally (Optional)
 
 ```bash
-uv run python agentcore launch --local
+agentcore launch --local
 
 curl -X POST http://localhost:8080/invocations \
   -H "Content-Type: application/json" \
@@ -60,7 +55,7 @@ curl -X POST http://localhost:8080/invocations \
 ### 3. Deploy to AWS
 
 ```bash
-uv run python agentcore launch
+agentcore launch
 ```
 
 Follow prompts to select:
@@ -71,7 +66,7 @@ Follow prompts to select:
 ### 4. Get Endpoint
 
 ```bash
-uv run python agentcore status
+agentcore status
 ```
 
 Shows endpoint URL and configuration.
@@ -80,7 +75,7 @@ Shows endpoint URL and configuration.
 
 ```bash
 # Via CLI
-uv run python agentcore invoke --prompt "Hello, agent!"
+agentcore invoke --prompt "Hello, agent!"
 
 # Via AWS SDK (Python)
 import boto3
@@ -96,9 +91,9 @@ response = client.invoke_agent(
 ### 6. Manage Deployment
 
 ```bash
-uv run python agentcore status          # Check status
-uv run python agentcore stop-session    # Stop session
-uv run python agentcore destroy         # Remove all resources
+agentcore status          # Check status
+agentcore stop-session    # Stop session
+agentcore destroy         # Remove all resources
 ```
 
 ## Deployment Modes
@@ -178,7 +173,9 @@ agentcore status  # Verify endpoint and config
 
 View logs in CloudWatch:
 ```bash
-aws logs tail /aws/lambda/your-agent-name --follow
+agentcore status # Copy log group/stream info
+aws logs tail /aws/bedrock-agentcore/runtimes/your-log-group --log-stream-name-prefix "yyyy/MM/dd/[runtime-logs]" --follow
+aws logs tail /aws/bedrock-agentcore/runtimes/your-log-group --log-stream-name-prefix "yyyy/MM/dd/[runtime-logs]" --since 1h
 ```
 
 ## Cost Considerations
