@@ -1,4 +1,4 @@
-# AWS AI Agent
+# Amazon Bedrock AgentCore Agent
 
 An AI agent built with AWS Strands SDK and deployed via AWS Bedrock AgentCore.
 
@@ -14,7 +14,7 @@ An AI agent built with AWS Strands SDK and deployed via AWS Bedrock AgentCore.
 ## Project Structure
 
 ```
-aws-ai-agent/
+amazon-bedrock-agentcore-agent/
 ├── agent/
 │   └── strands_agent.py         # Main agent implementation
 ├── tools/

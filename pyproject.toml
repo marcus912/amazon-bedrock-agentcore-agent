@@ -1,7 +1,7 @@
 [project]
-name = "aws-ai-agent"
+name = "amazon-bedrock-agentcore-agent"
 version = "0.1.0"
-description = "AWS AI Agent built with Strands SDK and deployed via Bedrock AgentCore"
+description = "Amazon Bedrock AgentCore Agent built with Strands SDK and deployed via Bedrock AgentCore"
 authors = [
     {name = "Marcus", email = "marcuslin912@gmail.com"}
 ]

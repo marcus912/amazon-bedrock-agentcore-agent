@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-Get your AWS AI Agent running in minutes.
+Get your Amazon Bedrock AgentCore Agent running in minutes.
 
 ## Prerequisites
 
