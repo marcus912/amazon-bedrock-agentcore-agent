@@ -28,9 +28,6 @@ dev = [
     "mypy>=1.9.0",
 ]
 
-[project.scripts]
-aws-ai-agent = "main:main"
-
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"

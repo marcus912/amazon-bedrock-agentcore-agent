@@ -1,196 +1,82 @@
-# Deployment Guide - AWS Bedrock AgentCore
+# AWS Deployment Guide
 
-This guide explains how to deploy your AWS AI Agent to AWS Bedrock AgentCore using the starter toolkit.
+Deploy your AI agent to AWS Bedrock AgentCore for production use.
 
-## Understanding Deployment Files
+**Note**: For convenience, set this alias:
+```bash
+alias agentcore='uv run python -m bedrock_agentcore_starter_toolkit.cli.cli'
+```
 
-### `.bedrock_agentcore.yaml`
-Configuration file for Bedrock AgentCore deployments. Contains:
-- Agent settings (name, entrypoint, platform)
-- AWS configuration (region, account, IAM roles)
-- Network settings (public/private, ports)
-- Memory and observability settings
+## Understanding the Deployment
 
-### `.bedrock_agentcore/aws_ai_agent/Dockerfile`
-Auto-generated Dockerfile for **containerized deployments** (Fargate, EKS, EC2).
+### Dockerfile
 
-**What it does:**
+The auto-generated `.bedrock_agentcore/*/Dockerfile`:
 - Uses `uv` for fast dependency installation
-- Sets up AWS environment variables
-- Installs your agent with all dependencies
-- Adds AWS OpenTelemetry for monitoring
+- Installs AWS OpenTelemetry for monitoring
 - Runs as non-root user for security
 - Exposes ports 9000, 8000, 8080
 - Launches with: `opentelemetry-instrument python -m bedrock_app`
 
-**When it's used:**
+**When used:**
 | Deployment Target | Uses Dockerfile? |
 |-------------------|------------------|
-| Local testing (`main.py`) | ❌ No |
-| AWS Lambda | ❌ No (uses Lambda runtime) |
-| AWS Fargate | ✅ **Yes** (serverless containers) |
-| AWS EKS | ✅ **Yes** (Kubernetes) |
-| AWS EC2 | ✅ **Yes** (container instances) |
+| Local (`agentcore launch --local`) | ✅ Yes |
+| AWS Lambda | ❌ No (Lambda runtime) |
+| AWS Fargate | ✅ Yes |
+| AWS EKS | ✅ Yes |
+| AWS EC2 | ✅ Yes |
 
 ## Prerequisites
 
 - AWS Account with Bedrock access
-- AWS CLI configured with credentials (`aws configure`)
-- Bedrock AgentCore Starter Toolkit installed (✅ Already installed)
-
-## Quick Start
-
-### 1. Configure AWS Credentials
-
-Ensure your AWS credentials are configured:
-
-```bash
-aws configure
-```
-
-You'll need:
-- AWS Access Key ID
-- AWS Secret Access Key
-- Default region (e.g., `us-west-2`)
-- Default output format (`json`)
-
-### 2. Launch Your Agent
-
-Use the convenient wrapper script:
-
-```bash
-# View all available commands
-uv run python agentcore --help
-
-# Check current status
-uv run python agentcore status
-
-# Launch agent (will prompt for deployment options)
-uv run python agentcore launch
-```
-
-## Available Commands
-
-### Core Commands
-
-#### `launch` - Deploy Your Agent
-```bash
-uv run python agentcore launch
-```
-
-Three deployment modes:
-- **Local**: Test locally before deploying
-- **AWS Lambda**: Serverless deployment
-- **AWS Fargate**: Container-based deployment
-
-#### `status` - Check Agent Status
-```bash
-uv run python agentcore status
-```
-
-Shows:
-- Configuration details
-- Runtime status
-- Endpoint URLs
-- Resource information
-
-#### `invoke` - Test Your Agent
-```bash
-uv run python agentcore invoke --prompt "What is 2+2?"
-```
-
-Send test requests to your deployed agent.
-
-#### `destroy` - Remove Deployment
-```bash
-uv run python agentcore destroy
-```
-
-Removes all AWS resources created for your agent.
-
-#### `stop-session` - Stop Active Session
-```bash
-uv run python agentcore stop-session
-```
-
-Stops the current runtime session.
-
-### Gateway Commands
-
-#### `create_mcp_gateway` - Create MCP Gateway
-```bash
-uv run python agentcore create_mcp_gateway
-```
-
-Creates a Model Context Protocol gateway for tool integration.
-
-#### `gateway` - Manage Gateways
-```bash
-uv run python agentcore gateway --help
-```
-
-Manage Bedrock AgentCore gateways.
-
-### Configuration
-
-#### `configure` - Manage Configuration
-```bash
-uv run python agentcore configure
-```
-
-Manage agent configuration settings.
-
-### Import Agents
-
-#### `import-agent` - Import Existing Agent
-```bash
-uv run python agentcore import-agent
-```
-
-Import a Bedrock Agent and convert it to LangChain or Strands format with AgentCore primitives.
+- AWS CLI configured (`aws configure`)
+- Bedrock AgentCore Starter Toolkit (installed via `uv sync`)
 
 ## Deployment Workflow
 
-### Step 1: Configure Your Agent
+### 1. Configure Environment
 
-Edit `.env` with your AWS settings:
 ```bash
-AWS_REGION=us-west-2
-AWS_PROFILE=default
-BEDROCK_MODEL_ID=anthropic.claude-4-sonnet-v2:0
+cp .env.example .env
+# Edit .env: Set AGENT_LOG_LEVEL
 ```
 
-### Step 2: Test Locally First
+AWS credentials via `aws configure`:
+- Access Key ID & Secret Access Key
+- Default region: `us-west-2`
+- Output format: `json`
 
-Before deploying to AWS, test locally:
+### 2. Test Locally (Optional)
+
 ```bash
-# Option 1: Interactive CLI
-uv run python main.py
+uv run python agentcore launch --local
 
-# Option 2: Test bedrock_app entrypoint
-uv run python test_bedrock_app.py
+curl -X POST http://localhost:8080/invocations \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Hello!"}'
 ```
 
-### Step 3: Launch to AWS
+### 3. Deploy to AWS
 
 ```bash
 uv run python agentcore launch
 ```
 
-Follow the prompts to:
-1. Select deployment mode (Lambda or Fargate)
-2. Configure resources (memory, timeout, etc.)
-3. Deploy to AWS
+Follow prompts to select:
+- Deployment mode (Lambda or Fargate)
+- Resource configuration (memory, timeout)
+- Network settings
 
-### Step 4: Get Endpoint Information
+### 4. Get Endpoint
 
 ```bash
 uv run python agentcore status
 ```
 
-This shows your agent's endpoint URL and configuration.
+Shows endpoint URL and configuration.
 
-### Step 5: Invoke Your Agent
+### 5. Test Deployment
 
 ```bash
 # Via CLI
@@ -207,106 +93,106 @@ response = client.invoke_agent(
 )
 ```
 
-### Step 6: Monitor and Manage
+### 6. Manage Deployment
 
 ```bash
-# Check status
-uv run python agentcore status
-
-# View logs (CloudWatch)
-aws logs tail /aws/lambda/your-agent-name --follow
-
-# Stop session if needed
-uv run python agentcore stop-session
-
-# Destroy when done (removes all resources)
-uv run python agentcore destroy
+uv run python agentcore status          # Check status
+uv run python agentcore stop-session    # Stop session
+uv run python agentcore destroy         # Remove all resources
 ```
 
-## Alternative: Direct Python Module
+## Deployment Modes
 
-You can also use the Python module directly:
+### Remote Build (Recommended)
+```bash
+agentcore launch
+```
+- Builds containers in AWS CodeBuild
+- No local Docker required
+- Best for teams without containerization tools
+
+### Local Container Testing
+```bash
+agentcore launch --local
+```
+- Requires Docker/Finch/Podman
+- Runs entirely locally
+- Fast iteration and debugging
+
+### Hybrid: Local Build + Cloud Deploy
+```bash
+agentcore launch --local-build
+```
+- Requires Docker/Finch/Podman
+- Builds locally, deploys to cloud
+- Useful for build customization
+
+## Advanced Commands
 
 ```bash
-# Full module path
-uv run python -m bedrock_agentcore_starter_toolkit.cli.cli --help
+# Gateway management
+agentcore gateway --help
+agentcore create_mcp_gateway
 
-# Launch
-uv run python -m bedrock_agentcore_starter_toolkit.cli.cli launch
+# Configuration
+agentcore configure
 
-# Status
-uv run python -m bedrock_agentcore_starter_toolkit.cli.cli status
+# Import existing agent
+agentcore import-agent
 ```
 
-## Production Deployment Checklist
+## Deployment Checklist
 
 - [ ] AWS credentials configured
-- [ ] Agent tested locally (`main.py` or `test_bedrock_app.py`)
-- [ ] Environment variables configured (`.env`)
-- [ ] AWS region selected
-- [ ] Deployment mode chosen (Lambda vs Fargate)
-- [ ] Resource limits configured (memory, timeout)
-- [ ] IAM roles and permissions verified
-- [ ] CloudWatch logging enabled
-- [ ] Agent launched successfully
-- [ ] Endpoint tested with sample requests
-- [ ] Monitoring and alerts configured
+- [ ] Environment variables set (`.env`)
+- [ ] (Optional) Tested locally with `--local`
+- [ ] Deployment mode selected
+- [ ] Resource limits configured
+- [ ] IAM permissions verified
+- [ ] Agent deployed successfully
+- [ ] Endpoint tested
+- [ ] Monitoring configured
 
 ## Troubleshooting
 
-### AWS Credentials Error
+**AWS credentials error:**
 ```bash
-# Verify credentials
-aws sts get-caller-identity
-
-# Reconfigure if needed
-aws configure
+aws sts get-caller-identity  # Verify
+aws configure  # Reconfigure
 ```
 
-### Region Not Supported
-Some regions may not have Bedrock AgentCore. Try:
-- `us-west-2` (Oregon)
-- `us-east-1` (N. Virginia)
+**Region not supported:**
+Try `us-west-2` or `us-east-1`.
 
-### Deployment Failed
-Check CloudFormation stack status:
+**Deployment failed:**
 ```bash
 aws cloudformation describe-stacks --stack-name your-agent-stack
 ```
 
-### Can't Invoke Agent
-Verify endpoint and credentials:
+**Can't invoke agent:**
 ```bash
-uv run python agentcore status
+agentcore status  # Verify endpoint and config
+```
+
+## Monitoring
+
+View logs in CloudWatch:
+```bash
+aws logs tail /aws/lambda/your-agent-name --follow
 ```
 
 ## Cost Considerations
 
-AWS Bedrock AgentCore charges for:
+AgentCore charges for:
 - **Compute**: Lambda invocations or Fargate vCPU/memory
-- **Model Usage**: Bedrock model API calls (Claude 4 Sonnet)
+- **Model Usage**: Bedrock API calls (Claude 3.7 Sonnet)
 - **Storage**: Agent memory and state
 - **Data Transfer**: Inbound/outbound traffic
 
-Estimate costs at: https://aws.amazon.com/bedrock/pricing/
+Estimate: [AWS Bedrock Pricing](https://aws.amazon.com/bedrock/pricing/)
 
 ## Resources
 
-- [Bedrock AgentCore Documentation](https://aws.github.io/bedrock-agentcore-starter-toolkit/)
+- [Bedrock AgentCore Docs](https://aws.github.io/bedrock-agentcore-starter-toolkit/)
 - [Starter Toolkit GitHub](https://github.com/aws/bedrock-agentcore-starter-toolkit)
-- [AWS Bedrock Pricing](https://aws.amazon.com/bedrock/pricing/)
-- [Strands Agents on Bedrock](https://strandsagents.com/latest/documentation/docs/user-guide/deploy/deploy_to_bedrock_agentcore/)
-
-## Quick Reference
-
-```bash
-# Essential commands
-uv run python agentcore launch        # Deploy to AWS
-uv run python agentcore status        # Check status
-uv run python agentcore invoke        # Test agent
-uv run python agentcore destroy       # Clean up
-
-# Local testing
-uv run python main.py                 # Interactive CLI
-uv run python test_bedrock_app.py     # Test bedrock_app
-```
+- [Strands on Bedrock](https://strandsagents.com/latest/documentation/docs/user-guide/deploy/deploy_to_bedrock_agentcore/)
