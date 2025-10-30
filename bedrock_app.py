@@ -2,13 +2,11 @@
 
 from bedrock_agentcore import BedrockAgentCoreApp
 from agent.strands_agent import create_agent, run_agent
+from config import setup_logging
 import logging
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+# Configure logging from environment variable
+setup_logging()
 logger = logging.getLogger(__name__)
 
 # Create the Bedrock AgentCore app

@@ -1,5 +1,6 @@
-"""Configuration management for the AWS AI Agent."""
+"""Centralized configuration for the AWS AI Agent."""
 
+import logging
 import os
 from typing import Optional
 from dotenv import load_dotenv
@@ -9,53 +10,52 @@ load_dotenv()
 
 
 class Config:
-    """Configuration class for the agent."""
+    """Application configuration loaded from environment variables."""
 
-    # AWS Configuration
-    AWS_REGION: str = os.getenv("AWS_REGION", "us-west-2")
-    AWS_PROFILE: str = os.getenv("AWS_PROFILE", "default")
+    # Logging configuration
+    LOG_LEVEL: str = os.getenv("AGENT_LOG_LEVEL", "INFO").upper()
 
-    # Bedrock Configuration
-    BEDROCK_MODEL_ID: str = os.getenv(
-        "BEDROCK_MODEL_ID",
-        "anthropic.claude-4-sonnet-v2:0"
-    )
-
-    # Agent Configuration
-    AGENT_LOG_LEVEL: str = os.getenv("AGENT_LOG_LEVEL", "INFO")
+    # You can add more configuration variables here as needed
+    # Example:
+    # AWS_REGION: str = os.getenv("AWS_REGION", "us-west-2")
+    # MODEL_ID: str = os.getenv("BEDROCK_MODEL_ID", "anthropic.claude-4-sonnet-v2:0")
 
     @classmethod
-    def get_aws_region(cls) -> str:
-        """Get the configured AWS region."""
-        return cls.AWS_REGION
-
-    @classmethod
-    def get_bedrock_model_id(cls) -> str:
-        """Get the configured Bedrock model ID."""
-        return cls.BEDROCK_MODEL_ID
-
-    @classmethod
-    def validate(cls) -> bool:
+    def get_log_level(cls) -> int:
         """
-        Validate that all required configuration is present.
+        Get the logging level as a logging constant.
 
         Returns:
-            True if configuration is valid, raises ValueError otherwise
+            Logging level constant (defaults to INFO if not set or invalid)
         """
-        required_vars = ["AWS_REGION"]
-
-        missing = []
-        for var in required_vars:
-            if not getattr(cls, var):
-                missing.append(var)
-
-        if missing:
-            raise ValueError(
-                f"Missing required configuration: {', '.join(missing)}"
-            )
-
-        return True
+        level_map = {
+            "DEBUG": logging.DEBUG,
+            "INFO": logging.INFO,
+            "WARNING": logging.WARNING,
+            "ERROR": logging.ERROR,
+            "CRITICAL": logging.CRITICAL,
+        }
+        return level_map.get(cls.LOG_LEVEL, logging.INFO)
 
 
-# Validate configuration on import
-Config.validate()
+def setup_logging():
+    """
+    Configure logging for the entire application.
+
+    Reads AGENT_LOG_LEVEL from environment and sets up basicConfig.
+    """
+    log_level = Config.get_log_level()
+
+    logging.basicConfig(
+        level=log_level,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        force=True  # Override any existing configuration
+    )
+
+    # Log the configured level for debugging
+    logger = logging.getLogger(__name__)
+    logger.debug(f"Logging configured with level: {logging.getLevelName(log_level)}")
+
+
+# Convenience reference
+config = Config()

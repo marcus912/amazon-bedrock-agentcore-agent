@@ -4,7 +4,12 @@ Get your AWS AI Agent up and running in minutes with `uv`.
 
 ## Prerequisites
 
-Make sure you have `uv` installed. If not, install it:
+- **Python 3.10+** (this project uses 3.13.5)
+- **AWS Account** with Bedrock access
+- **Claude 4 Sonnet** access in `us-west-2` region (default model)
+- **uv** - Fast Python package manager
+
+Install `uv` if not already installed:
 
 ```bash
 # macOS/Linux
@@ -34,11 +39,25 @@ pip install uv
    aws configure
    ```
 
+   You'll need:
+   - AWS Access Key ID
+   - AWS Secret Access Key
+   - Default region: `us-west-2`
+   - Default output format: `json`
+
 3. **Set up environment variables**:
    ```bash
    cp .env.example .env
-   # Edit .env with your AWS region and other settings
+   # Edit .env with your configuration
    ```
+
+   Key settings in `.env`:
+   ```bash
+   # Logging level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+   AGENT_LOG_LEVEL=INFO
+   ```
+
+   Note: AWS credentials and region are configured via `aws configure` command, not in `.env`
 
 ## Running the Agent
 
@@ -138,9 +157,9 @@ aws-ai-agent/
 ├── tools/
 │   └── custom_tools.py          # Custom tools (@tool decorated functions)
 ├── bedrock_app.py               # Bedrock AgentCore entrypoint
-├── config.py                    # Configuration from .env
 ├── main.py                      # Local testing script (interactive CLI)
 ├── test_bedrock_app.py          # Test bedrock app locally
+├── config.py                    # Centralized configuration (loads .env)
 ├── agentcore                    # CLI for AWS deployment
 ├── pyproject.toml               # Dependencies & project config (managed by uv)
 ├── uv.lock                      # Locked dependencies (auto-generated)
@@ -173,6 +192,113 @@ Agent: [Returns information about the Oregon region]
 
 Type `exit`, `quit`, or `q` to stop the agent.
 
+## Creating Custom Tools
+
+Add custom tools using the `@tool` decorator with clear docstrings:
+
+```python
+from strands import tool
+
+@tool
+def weather_lookup(city: str) -> str:
+    """
+    Get current weather for a city.
+
+    The docstring is important - the LLM uses it to understand
+    when and how to use this tool.
+
+    Args:
+        city: Name of the city
+
+    Returns:
+        Weather description
+    """
+    # Your implementation here
+    return f"Weather data for {city}"
+```
+
+**Key principles:**
+- ✅ Use descriptive docstrings (LLM reads these!)
+- ✅ Type hints for parameters and return values
+- ✅ Keep tools focused on one task
+- ✅ Handle errors gracefully
+
+Add your tool to `tools/custom_tools.py`:
+
+```python
+def get_custom_tools() -> List:
+    return [text_analyzer, format_data, aws_region_info, weather_lookup]
+```
+
+## Understanding Your Agent
+
+### Agent Architecture
+
+```python
+# In agent/strands_agent.py
+from strands import Agent
+from strands_tools.calculator import calculator
+from strands_tools.tavily import tavily_search
+from tools.custom_tools import get_custom_tools
+
+# Agent combines built-in and custom tools
+agent = Agent(
+    tools=[calculator, tavily_search] + get_custom_tools(),
+    system="Your custom prompt here",
+    model=None  # Defaults to Bedrock Claude 4 Sonnet
+)
+```
+
+**Available Built-in Tools:**
+- `calculator` - Math calculations
+- `tavily_search` - Web search
+- Many more in `strands-agents-tools` package
+
+**Model Providers:**
+The agent defaults to Amazon Bedrock (Claude 4 Sonnet) but supports:
+- Anthropic
+- Google Gemini
+- OpenAI
+- Ollama (local)
+- LiteLLM (proxy)
+- Custom providers
+
+## Common Patterns
+
+### Pattern 1: Simple Query Agent
+```python
+from agent.strands_agent import create_agent
+
+agent = create_agent()
+response = agent("What is 2 + 2?")
+print(response)
+```
+
+### Pattern 2: Custom System Prompt
+```python
+agent = create_agent(
+    system_prompt="You are a helpful math tutor. Explain step-by-step."
+)
+response = agent("What is the quadratic formula?")
+```
+
+### Pattern 3: Additional Tools
+```python
+from strands_tools.http_request import http_request
+
+agent = create_agent(additional_tools=[http_request])
+response = agent("Fetch data from https://api.example.com")
+```
+
+### Pattern 4: Different Model
+```python
+# Use a different Bedrock model
+agent = create_agent(model="anthropic.claude-3-5-sonnet-20241022-v2:0")
+
+# Or use OpenAI
+agent = create_agent(model="gpt-4o")  # Requires OpenAI API key
+```
+
 ## Troubleshooting
 
 ### uv command not found
@@ -185,8 +311,10 @@ source $HOME/.cargo/env  # macOS/Linux
 Run `aws configure` and provide:
 - AWS Access Key ID
 - AWS Secret Access Key
-- Default region name (e.g., us-west-2)
-- Default output format (json)
+- Default region name (e.g., `us-west-2`)
+- Default output format (`json`)
+
+**Important**: Bedrock requires `us-west-2` for Claude 4 Sonnet.
 
 ### Module not found errors
 Make sure dependencies are installed:
@@ -199,6 +327,14 @@ Install the correct Python version:
 ```bash
 uv python install 3.13.5
 ```
+
+### "Access denied" or model errors
+Ensure you have:
+1. ✅ AWS Bedrock service access enabled
+2. ✅ Claude 4 Sonnet model access in `us-west-2`
+3. ✅ Correct IAM permissions for Bedrock API calls
+
+Request model access: [AWS Bedrock Console](https://console.aws.amazon.com/bedrock/) → Model access
 
 ## Next Steps
 
