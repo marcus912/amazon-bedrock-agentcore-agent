@@ -4,10 +4,14 @@ Get your AWS AI Agent up and running in minutes with `uv`.
 
 ## Prerequisites
 
+### Required
 - **Python 3.10+** (this project uses 3.13.5)
 - **AWS Account** with Bedrock access
-- **Claude 4 Sonnet** access in `us-west-2` region (default model)
+- **Claude 3.7 Sonnet** access in `us-west-2` region (default model)
 - **uv** - Fast Python package manager
+
+### Optional (for local containerized testing)
+- **Docker**, **Finch**, or **Podman** - Only needed if you want to test with `agentcore launch --local`
 
 Install `uv` if not already installed:
 
@@ -61,35 +65,63 @@ pip install uv
 
 ## Running the Agent
 
-### Option 1: Using `uv run` (Recommended)
+### Option 1: Simple Local Testing (Recommended for Quick Start)
 
 Run commands directly with uv (no need to activate virtual environment):
 
 ```bash
-# Local testing
+# Interactive CLI testing
 uv run python main.py
 
-# Test bedrock app locally
+# Test bedrock_app.py entrypoint (simulates AgentCore requests)
 uv run python test_bedrock_app.py
 ```
 
-**Note**: For AWS deployment, see [DEPLOYMENT.md](DEPLOYMENT.md)
+This is the fastest way to test your agent logic without Docker or AWS.
 
-### Option 2: Activate Virtual Environment
+### Option 2: Local Testing with Docker (Full Production Simulation)
+
+Test your agent in a containerized environment (requires Docker, Finch, or Podman):
 
 ```bash
-# Activate the virtual environment
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+# Build and run locally in a container
+uv run python agentcore launch --local
 
-# Run the agent
-python main.py
-
-# Test bedrock app
-python test_bedrock_app.py
-
-# Deactivate when done
-deactivate
+# The agent will be available at http://localhost:8080
+# Test it with:
+curl -X POST http://localhost:8080/invocations \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Hello, agent!"}'
 ```
+
+**Requirements**: Docker, Finch, or Podman installed
+**Note**: Make sure port 8080 is free before starting
+**Architecture**: Containers are built for ARM64 (AWS Graviton)
+
+### Option 3: AWS Deployment
+
+Deploy your agent to AWS Bedrock AgentCore:
+
+```bash
+# Remote build and deploy (no Docker required)
+uv run python agentcore launch
+
+# Local build, cloud deploy (requires Docker/Finch/Podman)
+uv run python agentcore launch --local-build
+
+# Check deployment status
+uv run python agentcore status
+
+# Test deployed agent
+uv run python agentcore invoke --prompt "Hello, agent!"
+```
+
+For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md)
+
+### Option 4: Activate Virtual Environment
+
+If you prefer working with an activated environment:
+
 
 ## Common Commands
 
@@ -245,7 +277,7 @@ from tools.custom_tools import get_custom_tools
 agent = Agent(
     tools=[calculator, tavily_search] + get_custom_tools(),
     system="Your custom prompt here",
-    model=None  # Defaults to Bedrock Claude 4 Sonnet
+    model=None  # Defaults to Bedrock Claude 3.7 Sonnet
 )
 ```
 
@@ -255,7 +287,7 @@ agent = Agent(
 - Many more in `strands-agents-tools` package
 
 **Model Providers:**
-The agent defaults to Amazon Bedrock (Claude 4 Sonnet) but supports:
+The agent defaults to Amazon Bedrock (Claude 3.7 Sonnet) but supports:
 - Anthropic
 - Google Gemini
 - OpenAI
@@ -314,7 +346,7 @@ Run `aws configure` and provide:
 - Default region name (e.g., `us-west-2`)
 - Default output format (`json`)
 
-**Important**: Bedrock requires `us-west-2` for Claude 4 Sonnet.
+**Important**: Bedrock requires `us-west-2` for Claude 3.7 Sonnet.
 
 ### Module not found errors
 Make sure dependencies are installed:
@@ -331,10 +363,57 @@ uv python install 3.13.5
 ### "Access denied" or model errors
 Ensure you have:
 1. ✅ AWS Bedrock service access enabled
-2. ✅ Claude 4 Sonnet model access in `us-west-2`
+2. ✅ Claude 3.7 Sonnet model access in `us-west-2`
 3. ✅ Correct IAM permissions for Bedrock API calls
 
 Request model access: [AWS Bedrock Console](https://console.aws.amazon.com/bedrock/) → Model access
+
+### Docker/Podman/Finch not installed (for --local testing)
+For local containerized testing, install one of:
+- **Docker Desktop**: https://www.docker.com/products/docker-desktop/
+- **Finch** (AWS, macOS/Linux): `brew install finch`
+- **Podman**: https://podman.io/getting-started/installation
+
+If you don't need containerized testing, use Option 1 (Simple Local Testing) instead.
+
+## Quick Reference
+
+### Testing Commands
+```bash
+# Simple local testing (no Docker required)
+uv run python main.py                      # Interactive CLI
+uv run python test_bedrock_app.py          # Test bedrock_app entrypoint
+
+# Local containerized testing (requires Docker/Finch/Podman)
+uv run python agentcore launch --local     # Build and run in container
+curl -X POST http://localhost:8080/invocations \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Hello!"}'
+```
+
+### Deployment Commands
+```bash
+# Deploy to AWS
+uv run python agentcore launch             # Remote build (no Docker needed)
+uv run python agentcore launch --local-build  # Local build, cloud deploy
+
+# Manage deployment
+uv run python agentcore status             # Check status
+uv run python agentcore invoke --prompt "Hi"  # Test deployed agent
+uv run python agentcore destroy            # Remove all resources
+```
+
+### Development Commands
+```bash
+# Dependencies
+uv sync                                    # Install dependencies
+uv add package-name                        # Add dependency
+
+# Code quality
+uv run pytest                              # Run tests
+uv run black agent/ tools/ *.py           # Format code
+uv run ruff check agent/ tools/ *.py      # Lint code
+```
 
 ## Next Steps
 
