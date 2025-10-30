@@ -46,6 +46,15 @@ brew install uv
 
 ### Local Testing (Optional)
 
+**Option 1: Direct Python execution (quickest)**
+
+```bash
+# Run directly with uv
+uv run python bedrock_app.py
+```
+
+**Option 2: Container testing**
+
 Requires Docker, Finch, or Podman:
 
 ```bash
