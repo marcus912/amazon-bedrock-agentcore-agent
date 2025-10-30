@@ -50,3 +50,8 @@ htmlcov/
 
 # MacOS
 .DS_Store
+
+# Bedrock AgentCore toolkit generated files
+.bedrock_agentcore.yaml
+.bedrock_agentcore/
+.dockerignore
