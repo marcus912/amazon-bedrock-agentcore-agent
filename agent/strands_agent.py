@@ -46,7 +46,7 @@ Always be concise, accurate, and helpful in your responses."""
     agent = Agent(
         tools=tools,
         system_prompt=system_prompt or default_prompt,
-        model=model,  # Will default to Bedrock Claude 4 Sonnet if None
+        model=model,  # Will default to Bedrock Claude 3.7 Sonnet if None
     )
 
     return agent
