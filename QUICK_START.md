@@ -7,7 +7,7 @@ Get your Amazon Bedrock AgentCore Agent running in minutes.
 **Required:**
 - Python 3.10+ (project uses 3.13.5)
 - AWS Account with Bedrock access
-- Claude 3.7 Sonnet access in `us-west-2` region
+- Claude Sonnet 4 access in `us-west-2` region
 - `uv` - Fast Python package manager
 
 **Optional (for local testing):**
@@ -142,7 +142,7 @@ aws sts get-caller-identity  # Verify
 
 **Model access denied:**
 - Enable Bedrock service access
-- Request Claude 3.7 Sonnet access in us-west-2
+- Request Claude Sonnet 4 access in us-west-2
 - Check IAM permissions: [AWS Bedrock Console](https://console.aws.amazon.com/bedrock/)
 
 **Docker not installed (for --local):**

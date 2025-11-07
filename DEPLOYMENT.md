@@ -182,7 +182,7 @@ aws logs tail /aws/bedrock-agentcore/runtimes/your-log-group --log-stream-name-p
 
 AgentCore charges for:
 - **Compute**: Lambda invocations or Fargate vCPU/memory
-- **Model Usage**: Bedrock API calls (Claude 3.7 Sonnet)
+- **Model Usage**: Bedrock API calls (Claude Sonnet 4)
 - **Storage**: Agent memory and state
 - **Data Transfer**: Inbound/outbound traffic
 

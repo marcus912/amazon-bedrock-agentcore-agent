@@ -22,7 +22,7 @@ def create_agent(
     Create a Strands agent with specified configuration.
 
     Args:
-        model: Model identifier (defaults to Bedrock Claude 3.7 Sonnet)
+        model: Model identifier (defaults to Bedrock Claude Sonnet 4)
         system_prompt: Custom system prompt for the agent
         additional_tools: Additional tools to include beyond default tools
 
@@ -47,7 +47,7 @@ Always be concise, accurate, and helpful in your responses."""
     agent = Agent(
         tools=tools,
         system_prompt=system_prompt or default_prompt,
-        model=model,  # Will default to Bedrock Claude 3.7 Sonnet if None
+        model=model,  # Will default to Bedrock Claude Sonnet 4 if None
     )
 
     return agent
