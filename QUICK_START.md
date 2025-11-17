@@ -77,7 +77,7 @@ agentcore launch
 agentcore status
 
 # Test
-agentcore invoke --prompt "Hello!"
+agentcore invoke '{"prompt": "Hello!"}'
 
 # Clean up
 agentcore destroy

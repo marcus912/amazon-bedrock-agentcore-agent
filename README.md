@@ -37,7 +37,7 @@ agentcore launch --local
 
 # Deploy to AWS
 agentcore launch
-agentcore invoke --prompt "Hi"
+agentcore invoke '{"prompt": "Hi"}'
 agentcore destroy
 ```
 

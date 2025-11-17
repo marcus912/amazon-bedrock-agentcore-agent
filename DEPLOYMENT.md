@@ -75,7 +75,7 @@ Shows endpoint URL and configuration.
 
 ```bash
 # Via CLI
-agentcore invoke --prompt "Hello, agent!"
+agentcore invoke '{"prompt": "Hello, agent!"}'
 
 # Via AWS SDK (Python)
 import boto3
