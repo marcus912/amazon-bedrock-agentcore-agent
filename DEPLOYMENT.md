@@ -54,9 +54,30 @@ curl -X POST http://localhost:8080/invocations \
 
 ### 3. Deploy to AWS
 
+**Option 1: Using deployment script (RECOMMENDED)**
+
 ```bash
-agentcore launch
+./bin/deploy.sh
 ```
+
+The script automatically:
+- Reads environment variables from `.env` file
+- Passes them to `agentcore launch` using `--env` flags
+- Skips placeholder values (like `your-github-pat-here`)
+
+**Option 2: Manual deployment**
+
+```bash
+agentcore launch \
+  --env GITHUB_PAT=your-github-pat \
+  --env KNOWLEDGE_BASE_ID=your-kb-id \
+  --env MIN_SCORE=0.4 \
+  --env AWS_REGION=us-west-2
+```
+
+**IMPORTANT:** The `.env` file is **NOT** automatically deployed to AWS. You must explicitly pass environment variables using:
+- `./bin/deploy.sh` (recommended) - automatically reads from `.env`
+- `--env KEY=VALUE` flags when using `agentcore launch` directly
 
 Follow prompts to select:
 - Deployment mode (Lambda or Fargate)
@@ -98,29 +119,36 @@ agentcore destroy         # Remove all resources
 
 ## Deployment Modes
 
-### Remote Build (Recommended)
+### Remote Build with Environment Variables (Recommended)
 ```bash
-agentcore launch
+./bin/deploy.sh
 ```
 - Builds containers in AWS CodeBuild
 - No local Docker required
+- Automatically passes `.env` variables to deployment
 - Best for teams without containerization tools
 
 ### Local Container Testing
 ```bash
-agentcore launch --local
+./bin/deploy.sh --local
+# Or manually:
+agentcore launch --local --env GITHUB_PAT=your-pat
 ```
 - Requires Docker/Finch/Podman
 - Runs entirely locally
 - Fast iteration and debugging
+- Uses `.env` file when running locally
 
 ### Hybrid: Local Build + Cloud Deploy
 ```bash
-agentcore launch --local-build
+./bin/deploy.sh --local-build
+# Or manually:
+agentcore launch --local-build --env GITHUB_PAT=your-pat
 ```
 - Requires Docker/Finch/Podman
 - Builds locally, deploys to cloud
 - Useful for build customization
+- Must pass environment variables for cloud runtime
 
 ## Advanced Commands
 

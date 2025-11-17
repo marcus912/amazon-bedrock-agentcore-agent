@@ -69,9 +69,11 @@ curl -X POST http://localhost:8080/invocations \
 
 ### Deploy to AWS
 
+**Option 1: Using deployment script (RECOMMENDED)**
+
 ```bash
-# Deploy (no Docker required)
-agentcore launch
+# Deploy with environment variables from .env file
+./bin/deploy.sh
 
 # Check status
 agentcore status
@@ -83,12 +85,38 @@ agentcore invoke '{"prompt": "Hello!"}'
 agentcore destroy
 ```
 
+**Option 2: Manual deployment with environment variables**
+
+```bash
+# Deploy with environment variables (no Docker required)
+agentcore launch \
+  --env GITHUB_PAT=your-github-pat \
+  --env KNOWLEDGE_BASE_ID=your-kb-id \
+  --env MIN_SCORE=0.4
+
+# Check status
+agentcore status
+
+# Test
+agentcore invoke '{"prompt": "Hello!"}'
+
+# Clean up
+agentcore destroy
+```
+
+**Note:** The `.env` file is NOT deployed to AWS. You must pass environment variables explicitly using `--env` flags or use the `./bin/deploy.sh` script which automatically reads from `.env`.
+
 ## Deployment Options
 
 ```bash
-agentcore launch              # Remote build (no Docker needed)
-agentcore launch --local      # Local container testing
-agentcore launch --local-build  # Local build, cloud deploy
+./bin/deploy.sh                    # Remote build with .env variables (RECOMMENDED)
+./bin/deploy.sh --local            # Local container testing with .env variables
+./bin/deploy.sh --local-build      # Local build, cloud deploy with .env variables
+
+# Or manually without deployment script:
+agentcore launch --env KEY=VALUE   # Remote build (no Docker needed)
+agentcore launch --local           # Local container testing
+agentcore launch --local-build     # Local build, cloud deploy
 ```
 
 ## Add Custom Tools

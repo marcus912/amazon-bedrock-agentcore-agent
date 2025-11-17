@@ -19,6 +19,8 @@ amazon-bedrock-agentcore-agent/
 │   └── strands_agent.py         # Main agent implementation
 ├── tools/
 │   └── custom_tools.py          # Custom tool definitions
+├── bin/
+│   └── deploy.sh                # Deployment script (auto-loads .env)
 ├── bedrock_app.py               # Production entrypoint
 ├── config.py                    # Configuration (loads .env)
 ├── pyproject.toml               # Dependencies (managed by uv)
@@ -35,11 +37,17 @@ cp .env.example .env       # Configure environment
 # Local testing (requires Docker)
 agentcore launch --local
 
-# Deploy to AWS
-agentcore launch
+# Deploy to AWS with environment variables
+./bin/deploy.sh                      # Recommended: auto-loads .env
+# Or manually:
+agentcore launch --env GITHUB_PAT=your-pat
+
+# Test and cleanup
 agentcore invoke '{"prompt": "Hi"}'
 agentcore destroy
 ```
+
+**Important:** When deploying to AWS, the `.env` file is NOT automatically uploaded. Use `./bin/deploy.sh` to automatically pass environment variables, or use `--env` flags manually.
 
 ## Custom Tools
 
