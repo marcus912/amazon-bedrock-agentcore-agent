@@ -7,7 +7,9 @@ An AI agent built with AWS Strands SDK and deployed via AWS Bedrock AgentCore.
 ## Features
 
 - 🤖 Model-driven agent architecture using Strands SDK
-- 🔧 Built-in tools: Calculator, Tavily search, and custom tools
+- 📚 Bedrock Knowledge Base integration for RAG (retrieve tool)
+- 🔧 GitHub MCP tools for issue management
+- 🎯 Configurable system prompts via profiles
 - 🏗️ Production deployment via Bedrock AgentCore
 - 📝 Logging and observability support
 
@@ -17,8 +19,10 @@ An AI agent built with AWS Strands SDK and deployed via AWS Bedrock AgentCore.
 amazon-bedrock-agentcore-agent/
 ├── agent/
 │   └── strands_agent.py         # Main agent implementation
-├── tools/
-│   └── custom_tools.py          # Custom tool definitions
+├── config/
+│   └── prompts/                 # System prompt templates
+│       ├── default.txt          # General assistant prompt
+│       └── *.txt                # Custom prompt profiles
 ├── bin/
 │   └── deploy.sh                # Deployment script (auto-loads .env)
 ├── bedrock_app.py               # Production entrypoint
@@ -49,33 +53,33 @@ agentcore destroy
 
 **Important:** When deploying to AWS, the `.env` file is NOT automatically uploaded. Use `./bin/deploy.sh` to automatically pass environment variables, or use `--env` flags manually.
 
-## Custom Tools
-
-Add custom tools using the `@tool` decorator:
-
-```python
-from strands import tool
-
-@tool
-def your_tool(param: str) -> str:
-    """Tool description for LLM to understand when to use it."""
-    return result
-```
-
-Add to `tools/custom_tools.py`:
-
-```python
-def get_custom_tools() -> List:
-    return [text_analyzer, format_data, aws_region_info, your_tool]
-```
-
 ## Configuration
 
 Edit `.env` to configure:
 
-- **AGENT_LOG_LEVEL**: DEBUG, INFO, WARNING, ERROR, or CRITICAL (default: INFO)
+- **AGENT_LOG_LEVEL**: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL - default: INFO)
+- **BEDROCK_MODEL_ID**: Model identifier (leave empty for default: Claude Sonnet 4)
+- **PROMPT_PROFILE**: System prompt profile name from `config/prompts/` (default: default)
+- **GITHUB_PAT**: GitHub Personal Access Token for MCP tools
+- **KNOWLEDGE_BASE_ID**: Bedrock Knowledge Base ID for retrieval
+- **AWS_REGION**: AWS region for knowledge base (default: us-west-2)
+- **MIN_SCORE**: Minimum relevance score for retrieval (0.0-1.0, default: 0.7)
 
 AWS credentials are configured via `aws configure` command.
+
+### System Prompt Configuration
+
+System prompts are stored as text files in `config/prompts/`. To use a different prompt:
+
+```bash
+# In .env file
+PROMPT_PROFILE=default
+
+# Or via deployment
+./bin/deploy.sh --env PROMPT_PROFILE=custom
+```
+
+To create a custom prompt, add a new `.txt` file in `config/prompts/` and reference it via `PROMPT_PROFILE`.
 
 ## Documentation
 
