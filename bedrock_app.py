@@ -1,77 +1,54 @@
 """Bedrock AgentCore application integration."""
 
 from bedrock_agentcore import BedrockAgentCoreApp
-from agent.strands_agent import create_agent, run_agent
-from config import setup_logging
+from agent.strands_agent import create_agent, github_mcp_client
+from config import setup_logging, config
 import logging
 
-# Configure logging from environment variable
 setup_logging()
 logger = logging.getLogger(__name__)
 
-# Create the Bedrock AgentCore app
 app = BedrockAgentCoreApp()
 
-# Create the Strands agent (will be initialized once and reused)
-agent = None
-
-
-def get_or_create_agent():
-    """Get or create the Strands agent instance."""
-    global agent
-    if agent is None:
-        logger.info("Initializing Strands agent...")
-        agent = create_agent()
-        logger.info("Agent initialized successfully")
-    return agent
+# Initialize GitHub MCP tools once at startup (tools are static)
+logger.info("Initializing GitHub MCP tools...")
+with github_mcp_client:
+    GITHUB_TOOLS = github_mcp_client.list_tools_sync()
+logger.info(f"Initialized {len(GITHUB_TOOLS)} GitHub MCP tools")
 
 
 @app.entrypoint
 def production_agent(request):
-    """
-    Main entrypoint for the Bedrock AgentCore application.
-
-    This function is called for each request to the agent.
-    It processes the request through the Strands agent and returns the response.
+    """Main entrypoint for Bedrock AgentCore application.
 
     Args:
-        request: The incoming request from Bedrock AgentCore
+        request: Incoming request from Bedrock AgentCore
 
     Returns:
-        The agent's response
+        Dict with response or error
     """
+    session_id = request.get("session_id", "unknown")
+
     try:
-        # Get the prompt from the request
         prompt = request.get("prompt", "")
-        session_id = request.get("session_id", "unknown")
-
-        logger.info(f"Processing request for session {session_id}")
-
         if not prompt:
-            return {"error": "No prompt provided in request"}
+            return {"error": "No prompt provided", "session_id": session_id}
 
-        # Get the agent instance
-        current_agent = get_or_create_agent()
+        logger.info(f"Processing request (session: {session_id})")
 
-        # Process the request through the Strands agent
-        response = run_agent(prompt, current_agent)
+        # MCP client context needed for tool execution
+        with github_mcp_client:
+            agent = create_agent(model=config.MODEL_ID, additional_tools=GITHUB_TOOLS)
+            response = agent(prompt)
 
-        logger.info(f"Request processed successfully for session {session_id}")
-
-        return {
-            "response": response,
-            "session_id": session_id,
-        }
+        logger.info(f"Request processed (session: {session_id})")
+        return {"response": str(response), "session_id": session_id}
 
     except Exception as e:
-        logger.error(f"Error processing request: {e}", exc_info=True)
-        return {
-            "error": str(e),
-            "session_id": request.get("session_id", "unknown"),
-        }
+        logger.error(f"Error (session: {session_id}): {e}", exc_info=True)
+        return {"error": str(e), "session_id": session_id}
 
 
 if __name__ == "__main__":
-    # Run the Bedrock AgentCore app
     logger.info("Starting Bedrock AgentCore application...")
     app.run()
