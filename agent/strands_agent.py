@@ -7,7 +7,7 @@ import logging
 from strands_tools import retrieve
 from mcp.client.streamable_http import streamablehttp_client
 from strands.tools.mcp import MCPClient
-from config import config
+from config import config, load_system_prompt
 
 logger = logging.getLogger(__name__)
 
@@ -29,46 +29,28 @@ def create_agent(
     """Create a Strands agent with specified configuration.
 
     Args:
-        model: Model identifier (defaults to Claude Sonnet 4.5)
-        system_prompt: Custom system prompt
+        model: Model identifier (defaults to Claude Sonnet 4)
+        system_prompt: Custom system prompt (overrides configured profile)
         additional_tools: Additional tools beyond default retrieve tool
         session_manager: Session manager for conversation persistence
 
     Returns:
         Configured Agent instance
     """
-    default_prompt = """You are LAILA. Convert ONE email into ONE GitHub issue, then STOP.
-
-Workflow:
-1. Retrieve github bug issue guide from knowledge base
-2. Validate email has required fields (steps to reproduce, error details, environment)
-3. Create ONE issue using issue_write MCP tool
-4. Return result and STOP
-
-Hard Stop Conditions (return error and STOP immediately):
-- Guide not found in knowledge base
-- Email missing required fields
-- ANY MCP tool error (authentication, 404, 403, API failures)
-
-MCP Tool Failure Protocol:
-- Return: "ERROR: GitHub MCP tool failed - [exact error]"
-- STOP immediately - DO NOT retry or attempt workarounds
-
-Response Format:
-- Success: "✓ Issue created: [URL]\\n\\nSummary: [brief]"
-- Error: "ERROR: [what failed]"
-
-One issue per request. No exceptions."""
-
     tools = [retrieve]
     if additional_tools:
         tools.extend(additional_tools)
+
+    # Load prompt from configuration if not explicitly provided
+    if system_prompt is None:
+        system_prompt = load_system_prompt()
+        logger.info(f"Loaded system prompt from profile: {config.PROMPT_PROFILE}")
 
     logger.info(f"Creating agent with {len(tools)} tools")
 
     return Agent(
         tools=tools,
-        system_prompt=system_prompt or default_prompt,
+        system_prompt=system_prompt,
         model=model,
         session_manager=session_manager,
     )
