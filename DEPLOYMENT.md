@@ -34,7 +34,14 @@ The auto-generated `.bedrock_agentcore/*/Dockerfile`:
 
 ```bash
 cp .env.example .env
-# Edit .env: Set AGENT_LOG_LEVEL
+# Edit .env to configure:
+# - AGENT_LOG_LEVEL: Logging level (default: INFO)
+# - BEDROCK_MODEL_ID: Model ID (default: Claude Sonnet 4)
+# - PROMPT_PROFILE: System prompt profile (default: default)
+# - GITHUB_PAT: GitHub Personal Access Token
+# - KNOWLEDGE_BASE_ID: Bedrock Knowledge Base ID
+# - AWS_REGION: AWS region (default: us-west-2)
+# - MIN_SCORE: Retrieval score threshold (default: 0.7)
 ```
 
 AWS credentials via `aws configure`:
@@ -167,7 +174,11 @@ agentcore import-agent
 ## Deployment Checklist
 
 - [ ] AWS credentials configured
-- [ ] Environment variables set (`.env`)
+- [ ] Environment variables set (`.env`):
+  - [ ] GITHUB_PAT
+  - [ ] KNOWLEDGE_BASE_ID
+  - [ ] PROMPT_PROFILE (optional, defaults to "default")
+  - [ ] Other config values as needed
 - [ ] (Optional) Tested locally with `--local`
 - [ ] Deployment mode selected
 - [ ] Resource limits configured

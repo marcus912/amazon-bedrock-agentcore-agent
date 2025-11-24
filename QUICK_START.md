@@ -39,7 +39,14 @@ brew install uv
 3. **Set up environment:**
    ```bash
    cp .env.example .env
-   # Edit .env to set AGENT_LOG_LEVEL (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+   # Edit .env to configure:
+   # - AGENT_LOG_LEVEL: Logging level (default: INFO)
+   # - BEDROCK_MODEL_ID: Model ID (default: Claude Sonnet 4)
+   # - PROMPT_PROFILE: System prompt profile (default: default)
+   # - GITHUB_PAT: GitHub Personal Access Token
+   # - KNOWLEDGE_BASE_ID: Bedrock Knowledge Base ID
+   # - AWS_REGION: AWS region (default: us-west-2)
+   # - MIN_SCORE: Retrieval score threshold (default: 0.7)
    ```
 
 ## Run the Agent
