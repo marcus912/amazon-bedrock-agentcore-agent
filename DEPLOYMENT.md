@@ -108,10 +108,13 @@ agentcore invoke '{"prompt": "Hello, agent!"}'
 # Via AWS SDK (Python)
 import boto3
 
-client = boto3.client('bedrock-agent-runtime', region_name='us-west-2')
-response = client.invoke_agent(
-    agentId='your-agent-id',
-    sessionId='session-123',
+client = boto3.client(
+    'bedrock-agentcore',
+    region_name='us-west-2'
+)
+response = client.invoke_agent_runtime(
+    agentRuntimeArn='your-agent-runtime-arn',
+    runtimeSessionId='session-123',
     inputText='Your prompt here'
 )
 ```
