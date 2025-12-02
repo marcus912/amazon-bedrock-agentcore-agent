@@ -5,19 +5,9 @@ from typing import Optional, List
 import logging
 
 from strands_tools import retrieve
-from mcp.client.streamable_http import streamablehttp_client
-from strands.tools.mcp import MCPClient
 from config import config, load_system_prompt
 
 logger = logging.getLogger(__name__)
-
-# GitHub MCP client (requires GITHUB_PAT environment variable)
-github_mcp_client = MCPClient(
-    lambda: streamablehttp_client(
-        url="https://api.githubcopilot.com/mcp/",
-        headers={"Authorization": f"Bearer {config.GITHUB_PAT}"}
-    )
-)
 
 
 def create_agent(
