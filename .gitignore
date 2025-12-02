@@ -56,6 +56,4 @@ htmlcov/
 .bedrock_agentcore/
 .dockerignore
 
-# Config prompts - ignore all except default.txt
-config/prompts/*
-!config/prompts/default.txt
+config/prompts/laila.txt
