@@ -40,10 +40,17 @@ brew install uv
    ```bash
    cp .env.example .env
    # Edit .env to configure:
+   # Core:
    # - AGENT_LOG_LEVEL: Logging level (default: INFO)
    # - BEDROCK_MODEL_ID: Model ID (default: Claude Sonnet 4)
    # - PROMPT_PROFILE: System prompt profile (default: default)
+   # Sub-Agents:
+   # - GITHUB_AGENT_MODEL_ID: GitHub agent model (default: Sonnet 4)
+   # - EMAIL_AGENT_MODEL_ID: Email agent model (default: Sonnet 4)
    # - GITHUB_PAT: GitHub Personal Access Token
+   # - SES_SENDER_EMAIL: Verified AWS SES sender email
+   # - SES_SENDER_NAME: Friendly sender name (optional)
+   # Knowledge Base:
    # - KNOWLEDGE_BASE_ID: Bedrock Knowledge Base ID
    # - AWS_REGION: AWS region (default: us-west-2)
    # - MIN_SCORE: Retrieval score threshold (default: 0.7)
@@ -98,6 +105,7 @@ agentcore destroy
 # Deploy with environment variables (no Docker required)
 agentcore launch \
   --env GITHUB_PAT=your-github-pat \
+  --env SES_SENDER_EMAIL=noreply@yourdomain.com \
   --env KNOWLEDGE_BASE_ID=your-kb-id \
   --env MIN_SCORE=0.4
 
@@ -186,7 +194,7 @@ aws sts get-caller-identity  # Verify
 
 ## Next Steps
 
-- See [README.md](README.md) for project overview
+- See [README.md](../README.md) for project overview
 - See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed AWS deployment
 - Check example tools in `tools/custom_tools.py`
 - Explore [Strands SDK](https://github.com/strands-agents/sdk-python) documentation

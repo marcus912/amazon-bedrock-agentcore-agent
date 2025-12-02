@@ -35,10 +35,17 @@ The auto-generated `.bedrock_agentcore/*/Dockerfile`:
 ```bash
 cp .env.example .env
 # Edit .env to configure:
+# Core:
 # - AGENT_LOG_LEVEL: Logging level (default: INFO)
 # - BEDROCK_MODEL_ID: Model ID (default: Claude Sonnet 4)
 # - PROMPT_PROFILE: System prompt profile (default: default)
+# Sub-Agents:
+# - GITHUB_AGENT_MODEL_ID: GitHub agent model (default: Claude Sonnet 4)
+# - EMAIL_AGENT_MODEL_ID: Email agent model (default: Claude Sonnet 4)
 # - GITHUB_PAT: GitHub Personal Access Token
+# - SES_SENDER_EMAIL: Verified AWS SES sender email
+# - SES_SENDER_NAME: Friendly sender name (optional)
+# Knowledge Base:
 # - KNOWLEDGE_BASE_ID: Bedrock Knowledge Base ID
 # - AWS_REGION: AWS region (default: us-west-2)
 # - MIN_SCORE: Retrieval score threshold (default: 0.7)
@@ -77,6 +84,7 @@ The script automatically:
 ```bash
 agentcore launch \
   --env GITHUB_PAT=your-github-pat \
+  --env SES_SENDER_EMAIL=noreply@yourdomain.com \
   --env KNOWLEDGE_BASE_ID=your-kb-id \
   --env MIN_SCORE=0.4 \
   --env AWS_REGION=us-west-2
@@ -153,7 +161,7 @@ agentcore launch --local --env GITHUB_PAT=your-pat
 ```bash
 ./bin/deploy.sh --local-build
 # Or manually:
-agentcore launch --local-build --env GITHUB_PAT=your-pat
+agentcore launch --local-build --env GITHUB_PAT=your-pat --env SES_SENDER_EMAIL=noreply@yourdomain.com
 ```
 - Requires Docker/Finch/Podman
 - Builds locally, deploys to cloud
@@ -178,10 +186,14 @@ agentcore import-agent
 
 - [ ] AWS credentials configured
 - [ ] Environment variables set (`.env`):
-  - [ ] GITHUB_PAT
-  - [ ] KNOWLEDGE_BASE_ID
+  - [ ] GITHUB_PAT (for github_agent)
+  - [ ] SES_SENDER_EMAIL (for email_agent)
+  - [ ] KNOWLEDGE_BASE_ID (for retrieve tool)
   - [ ] PROMPT_PROFILE (optional, defaults to "default")
-  - [ ] Other config values as needed
+  - [ ] GITHUB_AGENT_MODEL_ID (optional, defaults to Sonnet 4)
+  - [ ] EMAIL_AGENT_MODEL_ID (optional, defaults to Sonnet 4)
+  - [ ] SES_SENDER_NAME (optional)
+- [ ] AWS SES sender email verified (required for email_agent)
 - [ ] (Optional) Tested locally with `--local`
 - [ ] Deployment mode selected
 - [ ] Resource limits configured

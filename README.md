@@ -2,13 +2,15 @@
 
 An AI agent built with AWS Strands SDK and deployed via AWS Bedrock AgentCore.
 
-> **Quick Start**: See [QUICK_START.md](QUICK_START.md) for setup instructions.
+> **Quick Start**: See [QUICK_START.md](docs/QUICK_START.md) for setup instructions.
 
 ## Features
 
 - 🤖 Model-driven agent architecture using Strands SDK
 - 📚 Bedrock Knowledge Base integration for RAG (retrieve tool)
-- 🔧 GitHub MCP tools for issue management
+- 🔧 Specialized sub-agents (agent-as-tool pattern)
+  - **GitHub Agent**: Repository management, issues, PRs via GitHub MCP
+  - **Email Agent**: AWS SES email sending with validation
 - 🎯 Configurable system prompts via profiles
 - 🏗️ Production deployment via Bedrock AgentCore
 - 📝 Logging and observability support
@@ -18,11 +20,20 @@ An AI agent built with AWS Strands SDK and deployed via AWS Bedrock AgentCore.
 ```
 amazon-bedrock-agentcore-agent/
 ├── agent/
-│   └── strands_agent.py         # Main agent implementation
+│   └── strands_agent.py         # Orchestrator agent
+├── tools/
+│   ├── subagents.py             # Sub-agents (github_agent, email_agent)
+│   ├── ses_email.py             # AWS SES email tool
+│   └── custom_tools.py          # Custom utility tools
 ├── config/
 │   └── prompts/                 # System prompt templates
-│       ├── default.txt          # General assistant prompt
-│       └── *.txt                # Custom prompt profiles
+│       ├── default.txt          # Orchestrator prompt
+│       ├── github_agent.txt     # GitHub sub-agent prompt
+│       └── email_agent.txt      # Email sub-agent prompt
+├── docs/
+│   └── subagents/               # Sub-agent documentation
+│       ├── GITHUB_AGENT.md      # GitHub agent setup guide
+│       └── EMAIL_AGENT.md       # Email agent setup guide
 ├── bin/
 │   └── deploy.sh                # Deployment script (auto-loads .env)
 ├── bedrock_app.py               # Production entrypoint
@@ -57,13 +68,24 @@ agentcore destroy
 
 Edit `.env` to configure:
 
+**Core Settings:**
 - **AGENT_LOG_LEVEL**: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL - default: INFO)
 - **BEDROCK_MODEL_ID**: Model identifier (leave empty for default: Claude Sonnet 4)
 - **PROMPT_PROFILE**: System prompt profile name from `config/prompts/` (default: default)
-- **GITHUB_PAT**: GitHub Personal Access Token for MCP tools
 - **KNOWLEDGE_BASE_ID**: Bedrock Knowledge Base ID for retrieval
-- **AWS_REGION**: AWS region for knowledge base (default: us-west-2)
 - **MIN_SCORE**: Minimum relevance score for retrieval (0.0-1.0, default: 0.7)
+
+**Sub-Agent Configuration:**
+- **GITHUB_AGENT_MODEL_ID**: Model for github_agent (leave empty for default: Claude Sonnet 4)
+- **EMAIL_AGENT_MODEL_ID**: Model for email_agent (leave empty for default: Claude Sonnet 4)
+
+**GitHub MCP:**
+- **GITHUB_PAT**: GitHub Personal Access Token for github_agent
+
+**AWS SES Email:**
+- **SES_SENDER_EMAIL**: Verified sender email address (required for email_agent)
+- **SES_SENDER_NAME**: Friendly sender name (optional)
+- **AWS_REGION**: AWS region for SES and knowledge base (default: us-west-2)
 
 AWS credentials are configured via `aws configure` command.
 
@@ -83,8 +105,10 @@ To create a custom prompt, add a new `.txt` file in `config/prompts/` and refere
 
 ## Documentation
 
-- **[QUICK_START.md](QUICK_START.md)** - Fast setup guide with `uv`
-- **[DEPLOYMENT.md](DEPLOYMENT.md)** - AWS deployment guide
+- **[docs/QUICK_START.md](docs/QUICK_START.md)** - Fast setup guide with `uv`
+- **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** - AWS deployment guide
+- **[docs/subagents/GITHUB_AGENT.md](docs/subagents/GITHUB_AGENT.md)** - GitHub agent setup and usage
+- **[docs/subagents/EMAIL_AGENT.md](docs/subagents/EMAIL_AGENT.md)** - Email agent and AWS SES setup
 
 ## Key Dependencies
 
