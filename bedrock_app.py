@@ -12,15 +12,15 @@ logger = logging.getLogger(__name__)
 app = BedrockAgentCoreApp()
 
 # Initialize tools once at startup
-logger.debug("Initializing tools...")
+logger.info("Initializing tools...")
 
 # Custom utility tools
 CUSTOM_TOOLS = get_custom_tools()
-logger.debug(f"Initialized {len(CUSTOM_TOOLS)} custom utility tools")
+logger.info(f"Initialized {len(CUSTOM_TOOLS)} custom utility tools")
 
 # Sub-agent tools (github_agent, email_agent)
 SUBAGENT_TOOLS = get_subagent_tools()
-logger.debug(f"Initialized {len(SUBAGENT_TOOLS)} sub-agent tools")
+logger.info(f"Initialized {len(SUBAGENT_TOOLS)} sub-agent tools")
 
 # Combine tools for main agent
 # Note: retrieve tool is added by create_agent()
