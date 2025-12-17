@@ -39,6 +39,8 @@ uv.lock
 # Environment variables
 .env
 .env.local
+dev.env
+prod.env
 
 # AWS
 .aws/
