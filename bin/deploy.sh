@@ -19,7 +19,10 @@
 # 2. Loads environment variables from {env}.env file
 # 3. Reads AGENT_NAME from the env file
 # 4. Passes all env vars to agentcore launch using --env flags
-# 5. Sets up IAM permissions (Knowledge Base, SES) after deployment
+#
+# Note: IAM permissions must be configured separately via:
+#   - Terraform: cd terraform/environments/{env} && terraform apply
+#   - Or manually: ./bin/setup-agent-permissions.sh {env}
 
 set -e  # Exit on error
 
@@ -171,7 +174,6 @@ echo ""
 # Execute agentcore launch with agent name, env variables, and extra arguments
 agentcore launch --agent "$AGENT_NAME" "${ENV_ARGS[@]}" "${EXTRA_ARGS[@]}"
 
-# Setup IAM permissions after successful deployment
 echo ""
-echo -e "${GREEN}Setting up IAM permissions...${NC}"
-"$SCRIPT_DIR/setup-agent-permissions.sh" "$DEPLOY_ENV"
+echo -e "${GREEN}Deployment complete!${NC}"
+echo -e "${YELLOW}Note: Ensure IAM permissions are configured via Terraform or ./bin/setup-agent-permissions.sh${NC}"

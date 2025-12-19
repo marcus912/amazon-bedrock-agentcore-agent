@@ -246,14 +246,28 @@ agentcore configure list
 
 ## IAM Permissions Setup
 
-The deploy script automatically sets up IAM permissions after deployment. To run manually:
+The agent requires IAM permissions for Knowledge Base and SES. Configure **before** first deployment:
+
+### Option 1: Terraform (Recommended)
+
+```bash
+cd terraform/environments/dev
+terraform init
+terraform apply
+```
+
+See `terraform/README.md` for details.
+
+### Option 2: Bash Script
 
 ```bash
 ./bin/setup-agent-permissions.sh dev
 ./bin/setup-agent-permissions.sh prod
 ```
 
-This attaches the following permissions to the agent's execution role:
+### Permissions Created
+
+Both approaches attach these permissions to the agent's execution role:
 - **Bedrock Knowledge Base**: `bedrock:Retrieve`, `bedrock:RetrieveAndGenerate`
 - **AWS SES**: `ses:SendEmail`, `ses:SendRawEmail`
 

@@ -1,0 +1,19 @@
+# Prod Environment Configuration
+# Copy this file to terraform.tfvars and update with your values:
+#   cp terraform.tfvars.example terraform.tfvars
+
+aws_region = "us-west-2"
+
+# Agent configuration
+agent_name = "laila_agent_prod"
+
+# Execution role name (from .bedrock_agentcore.yaml after first deployment)
+# Extract the role name from: arn:aws:iam::xxx:role/ROLE_NAME
+execution_role_name = "AmazonBedrockAgentCoreSDKRuntime-us-west-2-REPLACE_ME"
+
+# Bedrock Knowledge Base
+knowledge_base_id = "REPLACE_ME"
+
+# SES Configuration
+ses_sender_email = "your-email@yourdomain.com"
+ses_domain       = "yourdomain.com"

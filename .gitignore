@@ -58,4 +58,12 @@ htmlcov/
 .bedrock_agentcore/
 .dockerignore
 
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+*.tfvars
+!*.tfvars.example
+
 config/prompts/laila.txt
