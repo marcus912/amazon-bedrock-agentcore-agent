@@ -109,4 +109,4 @@ backend "s3" {
 | Terraform | Want IaC, version control, drift detection |
 | `bin/setup-agent-permissions.sh` | Quick setup, no Terraform experience |
 
-Both approaches are valid. Use `--skip-iam` with deploy.sh if using Terraform.
+Both approaches are valid. The `deploy.sh` script does not handle IAM, so just configure permissions separately using your preferred method.
