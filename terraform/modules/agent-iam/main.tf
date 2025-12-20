@@ -39,17 +39,9 @@ data "aws_iam_policy_document" "agent_permissions" {
   }
 }
 
-# Create the IAM policy
-resource "aws_iam_policy" "agent_permissions" {
-  name        = "${var.agent_name}-permissions"
-  description = "Service permissions for ${var.agent_name} agent (Knowledge Base, SES)"
-  policy      = data.aws_iam_policy_document.agent_permissions.json
-
-  tags = var.tags
-}
-
-# Attach policy to the execution role
-resource "aws_iam_role_policy_attachment" "agent_permissions" {
-  role       = var.execution_role_name
-  policy_arn = aws_iam_policy.agent_permissions.arn
+# Create inline policy on the execution role
+resource "aws_iam_role_policy" "agent_permissions" {
+  name   = "${var.agent_name}-permissions"
+  role   = var.execution_role_name
+  policy = data.aws_iam_policy_document.agent_permissions.json
 }

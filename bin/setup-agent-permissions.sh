@@ -193,7 +193,7 @@ if [[ "$STATEMENT_COUNT" -eq 0 ]]; then
 fi
 
 # Build the complete policy document
-POLICY_NAME="AgentServicePermissions"
+POLICY_NAME="${AGENT_NAME}-permissions"
 POLICY_DOCUMENT=$(cat <<EOF
 {
     "Version": "2012-10-17",
