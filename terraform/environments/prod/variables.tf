@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "agent_name" {
   description = "Name of the agent"
   type        = string
-  default     = "laila_agent_prod"
+  default     = "my_agent_prod"
 }
 
 variable "execution_role_name" {

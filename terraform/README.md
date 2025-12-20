@@ -38,7 +38,7 @@ terraform/
 Edit `terraform/environments/{env}/terraform.tfvars` with your values:
 
 ```hcl
-agent_name          = "laila_agent_dev"
+agent_name          = "my_agent_dev"
 execution_role_name = "AmazonBedrockAgentCoreSDKRuntime-us-west-2-xxxxx"
 knowledge_base_id   = "YOUR_KB_ID"
 ses_sender_email    = "sender@yourdomain.com"
@@ -65,7 +65,7 @@ terraform apply
 
 ```bash
 # Check the policy was created
-aws iam get-role-policy --role-name YOUR_ROLE_NAME --policy-name laila_agent_dev-permissions
+aws iam get-role-policy --role-name YOUR_ROLE_NAME --policy-name my_agent_dev-permissions
 ```
 
 ## Permissions Created
@@ -83,7 +83,7 @@ After first deployment with `agentcore launch`, find the role in `.bedrock_agent
 
 ```yaml
 agents:
-  laila_agent_dev:
+  my_agent_dev:
     aws:
       execution_role: arn:aws:iam::123456789:role/AmazonBedrockAgentCoreSDKRuntime-us-west-2-xxxxx
 ```

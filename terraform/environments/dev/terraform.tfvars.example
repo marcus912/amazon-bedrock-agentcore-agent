@@ -5,7 +5,7 @@
 aws_region = "us-west-2"
 
 # Agent configuration
-agent_name = "laila_agent_dev"
+agent_name = "my_agent_dev"
 
 # Execution role name (from .bedrock_agentcore.yaml after first deployment)
 # Extract the role name from: arn:aws:iam::xxx:role/ROLE_NAME
